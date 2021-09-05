@@ -1,82 +1,152 @@
-import Head from 'next/head'
+import { LockClosedIcon } from '@heroicons/react/solid'
+import { useState, useEffect } from 'react'
+import Router from 'next/router'
+import api from '../helpers/get'
 
-export default function Home() {
+export default function Example() {
+
+  const [user, setUser] = useState({ email: "", password: "" })
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setUser({ ...user, [name]: value })
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    if (user.email && user.password) {
+      setLoading(true)
+      const response = await api.post('/login', user, 'protected')
+      console.log(response.status)
+      const result = await response.text()
+      const parsed = JSON.parse(result)
+      console.log(parsed.accessToken)
+      if (response.status === 200) {
+        setLoading(false);
+        localStorage.setItem('access_token', parsed['accessToken'])
+        Router.push({
+          pathname: '/dashboard',
+          query: user
+        })
+      }
+
+    }
+  }
+
+  useEffect(() => {
+    console.log('User ', user)
+  }, [user])
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-sm rounded overflow-hidden shadow-lg p-8 justify-center">
 
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="p-3 font-mono text-lg bg-gray-100 rounded-md">
-            pages/index.js
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
+        <div className="max-w-md w-full space-y-8">
+          <div>
+            <img
+              className="mx-auto h-16 w-auto"
+              src="./icon_purple.png"
+              alt="Workflow"
+            />
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Or{' '}
+              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                start your 14-day free trial
+              </a>
             </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
+          </div>
+          <form
+            className="mt-8 
+        space-y-6"
+            action="#"
+            onSubmit={(e) => handleLogin(e)}
           >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
+            <input type="hidden" name="remember" defaultValue="true" />
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <div className="mt-1 mb-2">
+                  <input
+                    onChange={(e) => handleChange(e)}
+                    id="email-address"
+                    name="email"
+                    value={user.email}
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="Email address"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="mt-1 mb-1">
+                  <input
+                    onChange={(e) => handleChange(e)}
+                    id="password"
+                    name="password"
+                    value={user.password}
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder="Password"
+                  />
+                </div>
+              </div>
+            </div>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  Remember me
+                </label>
+              </div>
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+              <div className="text-sm">
+                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className={`group 
+                            relative 
+                            w-full 
+                            flex 
+                            justify-center 
+                            py-2 px-4 border
+                            border-transparent 
+                            ${loading && 'cursor-not-allowed opacity-50'}
+                            text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+              >
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <LockClosedIcon className={`h-5 w-5 text-indigo-500 group-hover:text-indigo-400`} aria-hidden="true" />
+                </span>
+                { loading? 'Logging in' : 'Sign in' }
+              </button>
+            </div>
+          </form>
+
         </div>
-      </main>
 
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
+      </div>
     </div>
   )
 }
