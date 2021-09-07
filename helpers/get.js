@@ -1,7 +1,7 @@
 const LICENCE_API_URL = process.env.LICENCE_API_URL || 'http://localhost:4000'
 
 module.exports = {
-    post: async(route, data, security='none') => {
+    post: (route, data, security='none') => {
         let myHeaders = new Headers();
          myHeaders.append("Content-Type", "application/json");
 
@@ -29,12 +29,16 @@ module.exports = {
   
     },
     
-    get: async(route) => {
+    get: (route, querystring ) => {
+
+
         var requestOptions = {
             method: 'GET',
             redirect: 'follow'
           };
-          
-         return fetch(`${LICENCE_API_URL}${route}`, requestOptions)
+        
+          const REQUEST_URL = `${LICENCE_API_URL}${route}${querystring}`
+          console.log(REQUEST_URL)
+         return fetch(REQUEST_URL, requestOptions)
     }
  }

@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useEffect, useState} from 'react'
+import { Fragment, useEffect, useState, useRef} from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import { useRouter } from 'next/router'
@@ -28,54 +28,76 @@ function classNames(...classes) {
 
 //*********   GET  DATA     */
 
-export const getStaticProps = async () => {
- const people = [ {
-        name: 'Jane Cooper',
-        title: 'Regional Paradigm Technician',
-        department: 'Optimization',
-        role: 'Admin',
-        email: 'jane.cooper@example.com',
-        image:
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-      },
-    ]
+// export const getStaticProps = async () => {
+//  const people = [ {
+//         name: 'Jane Cooper',
+//         title: 'Regional Paradigm Technician',
+//         department: 'Optimization',
+//         role: 'Admin',
+//         email: 'jane.cooper@example.com',
+//         image:
+//           'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
+//       },
+//     ]
 
-      return {
-         props: {
-            people: people
-         }
+//       return {
+//          props: {
+//             people: people
+//          }
          
-      }
-}
+//       }
+// }
 
-export default function Dashboard({people}) {
+export default function Dashboard() {
+  
     const router = useRouter()
-    const { user: appUser } = router.query
+    const { email } = router.query
     const [user, setUser ] = useState({
-        name: '',
-        email: '',
-        imageUrl:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      })
+      name: "",
+      email: ""
+    })
+
+    const usePrevious = (value) => {
+      const ref = useRef()
+      useEffect(() => {
+        ref.current = value
+      }, [value])
+      return ref.current
+    }
+
+    const prevUser = usePrevious(user)
 
       const [ licences, setLicences ] = useState([])
+      const [ fetches, setFetches ] = useState(0)
+      const [ loading, setLoading ] = useState(true)
 
     useEffect(() => {
         console.log("User ", router.query)
-        setUser({...user, ...router.query})
+        setUser({...user, email: email})
+        // fetchLicences()
+    }, [router])
+
+    useEffect(() => {
         console.log('Merged ', user)
-        fetchLicences()
-    }, [appUser])
+        if(prevUser !== user) {
+          fetchLicences()
+        }
+    }, [user])
 
     const fetchLicences = async() => {
-        const response = await api.get('/app-licences')
+       if( !user.email) return
+        console.log('FETCHING ', user.email)
+        const response = await api.get(`/app-licences`, `?email=${user.email}`)
         const result = await response.text()
-        setLicences(result)
-        console.log("Licences ", licences)
+        setFetches( fetches + 1)
+        setLicences(JSON.parse(result)) 
     }
 
     useEffect(() => {
-        console.log("****>", licences)
+        console.log("****>", typeof licences)
+        if(!!licences && licences.length > 0) {
+          setLoading(false)
+        }
     }, [licences])
     
   return (
@@ -232,7 +254,12 @@ export default function Dashboard({people}) {
       </header>
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <List data={people}/>
+          { licences && !loading &&
+            <List data={licences}/>
+          }
+          { loading && 
+          <>Loading data...</>
+          }
         </div>
       </main>
     </div>
