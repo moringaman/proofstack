@@ -14,7 +14,7 @@ function ToggleButton() {
     >
       <span className="sr-only">Enable notifications</span>
       <span
-        className={`${
+        className={`transform transition ease-in-out duration-200 ${
           enabled ? 'translate-x-6' : 'translate-x-1'
         } inline-block w-4 h-4 transform bg-white rounded-full`}
       />

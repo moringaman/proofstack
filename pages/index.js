@@ -22,12 +22,14 @@ export default function Example() {
       const result = await response.text()
       const parsed = JSON.parse(result)
       console.log(parsed.accessToken)
+      // TODO: Remove password from user object
       if (response.status === 200) {
         setLoading(false);
         localStorage.setItem('access_token', parsed['accessToken'])
+      delete user['password']
         Router.push({
-          pathname: '/dashboard',
-          query: user
+          pathname: `dashboard/`,
+          query: {email: user.email}
         })
       }
 
