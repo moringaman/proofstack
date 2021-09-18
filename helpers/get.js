@@ -11,7 +11,7 @@ module.exports = {
         
             myHeaders.append(
                 "Authorization",
-                "Bearer eyJhbGciOiJIUzI1NiJ9.bGVvbkBtb3JpbmdhbXV0dWFsLm9yZw.X0XOXqZAgKZV3kJaNC7EaN1LR9kxSYtGxzLccmpsKgo"
+                `Bearer ${token}`
                 );
          }
       
@@ -29,15 +29,41 @@ module.exports = {
   
     },
     
-    get: (route, querystring ) => {
+    get: (url, credentials ) => {
 
 
         var requestOptions = {
             method: 'GET',
             redirect: 'follow'
           };
+
+          if(credentials) {
+              console.log("adding credentials")
+             const token = JSON.parse(localStorage.getItem("Token:"))
+
+          }
+
+          // const retryFetch = (url, requestOptions, retries = 4, backoff = 1000) => {
+          //   const retryCodes = [404, 401, 408, 500, 502, 503, 504, 522, 524, 203]
+
+          //   return fetch(url,  requestOptions)
+          //   .then(response => {
+          //     console.log('STATUS', response.status)
+          //     if(response.status === 200) return response.json()
+          //     if (retries > 0 && retryCodes.includes(response.status)) {
+          //       console.log('retries ', retries)
+          //       setTimeout(() => {
+          //           return retryFetch(url, requestOptions, retries - 1, backoff * 2)
+          //       }, backoff)
+          //     } else {
+          //       throw new Error(response)
+          //     }
+          //   })
+          //   .catch(console.error)
+          // } 
+         
         
-          const REQUEST_URL = `${LICENCE_API_URL}${route}${querystring}`
+          const REQUEST_URL = `${LICENCE_API_URL}${url}`
           console.log(REQUEST_URL)
          return fetch(REQUEST_URL, requestOptions)
     }

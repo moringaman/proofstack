@@ -1,23 +1,42 @@
 /* This example requires Tailwind CSS v2.0+ */
 import ToggleButton from './ToggleButton'
+import _ from 'lodash'
+import { useRef, useEffect, useState } from 'react'
+import Pagination from './Pagination'
 
+  export default function List(props) {
 
-const people = [
-    {
-      name: 'Jane Cooper',
-      title: 'Regional Paradigm Technician',
-      department: 'Optimization',
-      role: 'Admin',
-      email: 'jane.cooper@example.com',
-      image:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-    },
-    // More people...
-  ]
-  
-  export default function List({data}) {
+    const { licences, validating } = props
+
     
-    console.log("Data ", data)
+    const usePrevious = data => {
+    const dataRef = useRef()
+
+      useEffect(() => {
+        dataRef.current = licences
+      }, [data])
+      return dataRef.current
+    }
+
+    const previousLicences = usePrevious(licences)
+    
+    let sorted = _.orderBy(licences, ['created'], ['desc'])
+
+  const perPage = 6  
+  const [sliceArray, setSliceArray] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = perPage;
+
+  const paginate = (e) => {
+    console.log("Paginate ", e)
+    setCurrentPage(e)
+  }
+ 
+/// JSX Part
+sorted = sorted.slice(
+             (currentPage - 1) * productsPerPage, currentPage * productsPerPage
+            )
+
     return (
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -30,13 +49,13 @@ const people = [
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Name
+                      User / Application
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Title
+                      Licence Code
                     </th>
                     <th
                       scope="col"
@@ -48,7 +67,7 @@ const people = [
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Role
+                      Type
                     </th>
                     <th
                       scope="col"
@@ -60,24 +79,35 @@ const people = [
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Disable
+                      Disable / Enable
                     </th>
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Edit</span>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {data && data.map((licence) => (
+                <tbody className="table-auto">
+                { validating && 
+                  <tr className="animate-pulse bg-green-400">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center">
+                      <div className="flex-grow h-10"></div>
+                      </div>
+                    </td>
+                    </tr>
+                  }
+                </tbody>
+                <tbody className="bg-white divide-y divide-gray-200"> 
+                  {licences.length > 0 && sorted.map(licence => (
                     <tr key={licence.licence}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-1 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
                             {/* <img className="h-10 w-10 rounded-full" src={licence.image} alt="" /> */}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{licence['app-name']}</div>
-                            <div className="text-sm text-gray-500">{licence.email}</div>
+                            <div className="text-sm font-medium text-gray-900">{licence.email}</div>
+                            <div className="text-sm text-gray-500">{licence['app-name']}</div>
                           </div>
                         </div>
                       </td>
@@ -103,6 +133,7 @@ const people = [
                   ))}
                 </tbody>
               </table>
+              <Pagination pageSelect={paginate} perPage={perPage} currentPage={currentPage} count={licences.length}/>
             </div>
           </div>
         </div>
