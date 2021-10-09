@@ -1,14 +1,24 @@
 /* This example requires Tailwind CSS v2.0+ */
 import ToggleButton from './ToggleButton'
 import _ from 'lodash'
+import moment from 'moment'
 import { useRef, useEffect, useState } from 'react'
 import Pagination from './Pagination'
+import classNames from 'classnames'
+
 
   export default function List(props) {
 
-    const { licences, validating } = props
+    const { licences, validating, deactivateLicence } = props
 
-    
+    const headings = [
+      'user / application',
+      "licence code",
+      "Expires",
+      "Status",
+      "Type",
+      "Disable"
+    ]
     const usePrevious = data => {
     const dataRef = useRef()
 
@@ -23,13 +33,40 @@ import Pagination from './Pagination'
     let sorted = _.orderBy(licences, ['created'], ['desc'])
 
   const perPage = 6  
-  const [sliceArray, setSliceArray] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = perPage;
 
   const paginate = (e) => {
     console.log("Paginate ", e)
     setCurrentPage(e)
+  }
+
+  const renderHeadings = () => {
+   return headings.map((heading, i) => (
+      <th
+      key={i}
+      scope="col"
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    >
+      {heading}
+    </th> 
+   ))
+  }
+
+  const renderStatus = (licence) => {
+
+    let statusClass = classNames(
+      {
+      'bg-gray-100 text-gray-500': moment(licence.expires) < moment(new Date()),
+      'bg-red-100 text-red-500': licence.status === 'inactive',
+      'bg-green-100 text-green-500': licence.status === 'active',
+      });
+
+    return(
+      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}`}>
+      {licence.status}
+      </span>
+    )
   }
  
 /// JSX Part
@@ -45,42 +82,7 @@ sorted = sorted.slice(
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      User / Application
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Licence Code
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Status
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Type
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Disable / Enable
-                    </th>
+                    { renderHeadings() }
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Edit</span>
                     </th>
@@ -116,9 +118,13 @@ sorted = sorted.slice(
                         {/* <div className="text-sm text-gray-500">{licence.department}</div> */}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
+                        <div className="text-sm text-gray-900">{moment(licence.expires).format("MMM Do YY")}</div>
+                        {/* <div className="text-sm text-gray-500">{licence.department}</div> */}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {
+                        renderStatus(licence)
+                        }
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{licence.type}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -127,7 +133,7 @@ sorted = sorted.slice(
                         </a>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <ToggleButton/>
+                      <ToggleButton isEnabled={licence.status === 'inactive'} handleChange={deactivateLicence} id={licence.licence} />
                       </td>
                     </tr>
                   ))}
