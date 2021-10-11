@@ -100,6 +100,15 @@ export default function Dashboard() {
          mutate()
       } 
 
+      const listHeadings = [
+        'user / application',
+        "licence code",
+        "Expires",
+        "Type",
+        "Status",
+        "Disable"
+      ]
+
        console.log("DATA ", user.email, data)
        console.log("Applications", applications)
   return (
@@ -127,7 +136,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
           { user.email && data && 
-            <List licences={data} validating={adding} deactivateLicence={deactivateLicence}/>
+            <List canToggle={true} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
           }
           { !data && 
           <>Loading data...</>
