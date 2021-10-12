@@ -136,7 +136,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
           { user.email && data && 
-            <List canToggle={true} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
+            <List canToggle={true} toggledId={'licence'} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
           }
           { !data && 
           <>Loading data...</>

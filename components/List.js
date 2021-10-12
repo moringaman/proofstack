@@ -9,7 +9,7 @@ import classNames from 'classnames'
 
 export default function List(props) {
 
-  const { listData, validating, canToggle, toggleAction, headings, exclude } = props
+  const { listData, validating, canToggle, toggleAction, headings, exclude, toggledId } = props
 
   const usePrevious = data => {
     const dataRef = useRef()
@@ -18,6 +18,10 @@ export default function List(props) {
       dataRef.current = listData
     }, [listData])
     return dataRef.current
+  }
+
+  const types = { 
+    INACTIVE: 'inactive'
   }
 
   const previouslistData = usePrevious(listData)
@@ -45,8 +49,39 @@ export default function List(props) {
     ))
   }
 
+  const renderListItems = (el, doubled) => {
+
+    let rendered = Object.keys(el).map((obj, i) => {
+
+      return (
+        <>
+          {
+            obj !== doubled[1] && !exclude.includes(obj) &&
+            <td className="px-1 py-4 whitespace-nowrap" key={i}>
+              <div className="flex items-center">
+                <div className="flex-shrink-0 h-10 w-10">
+                </div>
+                <div className="ml-4">
+                  <div className="text-sm font-medium text-gray-900">
+                    {["expired", "active", "disabled", "inactive"].includes(el[obj]) ? renderStatus(el[obj]) : formatted(el[obj])}
+                  </div>
+                  {
+                    obj === doubled[0] &&
+                    <div className="text-sm font-medium text-gray-600">{formatted(el[doubled[1]])}</div>
+                  }
+                </div>
+              </div>
+            </td>
+          }
+        </>
+      )
+    })
+
+    return <>{rendered}</>
+  }
+
   const renderStatus = (data) => {
-console.log("***DATA** ", data)
+    
     let statusClass = classNames(
       {
         'bg-gray-100 text-gray-500': data === 'expired',//moment(data, moment.ISO_8601, true).isValid() && moment(data) < moment(new Date()),
@@ -61,47 +96,26 @@ console.log("***DATA** ", data)
     )
   }
 
+  
+
   /// JSX Part
   sorted = sorted.slice(
     (currentPage - 1) * productsPerPage, currentPage * productsPerPage
   )
 
   const formatted = (element) => {
-    console.log(element)
-    if (moment(element, moment.ISO_8601, true).isValid() === true) return  moment(element).format("MMM Do YY")
+    
+    if (moment(element, moment.ISO_8601, true).isValid() === true) return moment(element).format("MMM Do YY")
     // if (['expired', 'active', 'disabled', 'inactive'].includes(element)) return renderStatus(element)
     return element
   }
 
-  const renderListItems = (el, doubled) => {
-
-   let rendered = Object.keys(el).map((obj, i) => {
-     
-      return (
-        <>
-        {
-          
-           obj !== doubled[1] && !exclude.includes(obj) &&
-          <td className="px-1 py-4 whitespace-nowrap" key={i}>
-          <div className="flex items-center">
-            <div className="flex-shrink-0 h-10 w-10">
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">
-                {["expired", "active", "disabled", "inactive"].includes(el[obj]) ? renderStatus(el[obj]) : formatted(el[obj])}
-              </div>
-              {
-                obj === doubled[0] &&
-                <div className="text-sm font-medium text-gray-600">{formatted(el[doubled[1]])}</div>
-              }
-            </div>
-          </div>
-        </td>
-        }
-         </>  
-      )})
-
-return <>{rendered}</>
+  const renderToggleButton = (el) => {
+    return (
+      <>
+       <ToggleButton isEnabled={el.status === types.INACTIVE} handleChange={toggleAction} id={el[toggledId]} />
+      </>
+    )
   }
 
 
@@ -133,25 +147,27 @@ return <>{rendered}</>
               <tbody>
                 {listData.length > 0 && sorted.map(el => (
                   <>
-                  <tr>  
+                    <tr>
                       {
-                      renderListItems(el, ['email', 'app-name'])
+                        renderListItems(el, ['email', 'app-name'])
                       }
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                       Edit
-                      </a>
-                    </td>
-                    {canToggle &&
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <ToggleButton isEnabled={el.status == "inactive"} handleChange={toggleAction} id={el.data} />
+                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                          Edit
+                        </a>
                       </td>
-                    }
-                  </tr>
+                      {canToggle &&
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          {
+                          renderToggleButton(el)
+                          }
+                          {/* <ToggleButton isEnabled={el.status === types.INACTIVE} handleChange={toggleAction} id={el.licence} /> */}
+                        </td>
+                      }
+                    </tr>
                   </>
                 )
                 )}
-
               </tbody>
             </table>
             <Pagination pageSelect={paginate} perPage={perPage} currentPage={currentPage} count={listData.length} />

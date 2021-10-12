@@ -1,17 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Switch } from '@headlessui/react'
 
 function ToggleButton({isEnabled, handleChange, id}) {
-  const [enabled, setEnabled] = useState(isEnabled)
 
+  const [enabled, setEnabled] = useState(null)
 
   const toggle = (id) => {
     // if(enabled) {
       setEnabled((enabled) => !enabled)
       handleChange(id)
     // }
-    
   }
+
+  useEffect(() => {
+    setEnabled(isEnabled)
+  }, [isEnabled])
+
+  console.log("ENABLED ", isEnabled)
 
   return (
     <Switch
