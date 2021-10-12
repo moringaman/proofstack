@@ -16,7 +16,7 @@ export default function List(props) {
 
     useEffect(() => {
       dataRef.current = listData
-    }, [data])
+    }, [listData])
     return dataRef.current
   }
 
@@ -131,11 +131,11 @@ return <>{rendered}</>
                 }
               </tbody>
               <tbody>
-                {listData.length > 0 && sorted.map(data => (
+                {listData.length > 0 && sorted.map(el => (
                   <>
                   <tr>  
                       {
-                      renderListItems(data, ['email', 'app-name'])
+                      renderListItems(el, ['email', 'app-name'])
                       }
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <a href="#" className="text-indigo-600 hover:text-indigo-900">
@@ -144,7 +144,7 @@ return <>{rendered}</>
                     </td>
                     {canToggle &&
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <ToggleButton isEnabled={data.status == "inactive"} handleChange={toggleAction} id={data.data} />
+                        <ToggleButton isEnabled={el.status == "inactive"} handleChange={toggleAction} id={el.data} />
                       </td>
                     }
                   </tr>
