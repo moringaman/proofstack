@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import api from '../../helpers/get'
 import { Context } from '../../context'
-
+import auth from '../../helpers/auth'
 import List from '../../components/List'
 import CardList from '../../components/cardList'
 import Modal from '../../components/Modal'
@@ -24,7 +24,13 @@ export default function Dashboard() {
 
     const { state, dispatch } = useContext(Context)
 
-    const { email } = state.user
+    let email = ""
+    if(auth.isLoggedIn().hasOwnProperty('email') ) {
+       email = auth.isLoggedIn().email
+    } else {
+       email  = state.user.email
+    }
+
     const { adding } = state.licences.adding
 
     const swrOptions = {
@@ -136,7 +142,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
           { user.email && data && 
-            <List canToggle={true} toggledId={'licence'} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
+            <List pageSize={6} doubled={['email', 'app-name']} canToggle={true} toggledId={'licence'} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
           }
           { !data && 
           <>Loading data...</>

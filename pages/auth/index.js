@@ -27,6 +27,7 @@ export default function Example() {
       if (response.status === 200) {
         setLoading(false);
         localStorage.setItem('access_token', parsed['accessToken'])
+        localStorage.setItem('user', user.email)
         dispatch({
           type: "LOGGED_IN_USER",
           payload: user

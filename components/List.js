@@ -9,26 +9,27 @@ import classNames from 'classnames'
 
 export default function List(props) {
 
-  const { listData, validating, canToggle, toggleAction, headings, exclude, toggledId } = props
+  const { listData, validating, canToggle, toggleAction, headings, exclude, toggledId, pageSize, doubled=[] } = props
 
-  const usePrevious = data => {
-    const dataRef = useRef()
+  // const usePrevious = data => {
+  //   const dataRef = useRef()
 
-    useEffect(() => {
-      dataRef.current = listData
-    }, [listData])
-    return dataRef.current
-  }
+  //   useEffect(() => {
+  //     dataRef.current = listData
+  //   }, [listData])
+  //   return dataRef.current
+  // }
 
   const types = { 
     INACTIVE: 'inactive'
   }
 
-  const previouslistData = usePrevious(listData)
+  // const previouslistData = usePrevious(listData)
 
   let sorted = _.orderBy(listData, ['created'], ['desc'])
 
-  const perPage = 6
+  console.log("SORTED ", sorted)
+  const perPage = pageSize
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = perPage;
 
@@ -36,6 +37,8 @@ export default function List(props) {
     console.log("Paginate ", e)
     setCurrentPage(e)
   }
+
+  console.log("DATA --->>> ", listData)
 
   const renderHeadings = () => {
     return headings.map((heading, i) => (
@@ -49,8 +52,8 @@ export default function List(props) {
     ))
   }
 
-  const renderListItems = (el, doubled) => {
-
+  const renderListItems = (el, doubled=[]) => {
+      console.log("&&& ", el)
     let rendered = Object.keys(el).map((obj, i) => {
 
       return (
@@ -103,6 +106,8 @@ export default function List(props) {
     (currentPage - 1) * productsPerPage, currentPage * productsPerPage
   )
 
+
+
   const formatted = (element) => {
     
     if (moment(element, moment.ISO_8601, true).isValid() === true) return moment(element).format("MMM Do YY")
@@ -149,7 +154,7 @@ export default function List(props) {
                   <>
                     <tr>
                       {
-                        renderListItems(el, ['email', 'app-name'])
+                        renderListItems(el, doubled)
                       }
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900">

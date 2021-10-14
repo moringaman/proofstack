@@ -8,9 +8,9 @@ export default function Navbar(props) {
 
     const { user } = props
     const navigation = [
-        { name: 'Dashboard', href: '#', current: true },
+        { name: 'Dashboard', href: '/dashboard', current: true },
         { name: 'Team', href: '#', current: false },
-        { name: 'Applications', href: '#', current: false },
+        { name: 'Applications', href: '/applications', current: false },
         { name: 'Licences', href: '#', current: false },
         { name: 'Reports', href: '#', current: false },
       ]
