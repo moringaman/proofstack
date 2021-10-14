@@ -4,12 +4,13 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import api from '../../helpers/get'
 import { Context } from '../../context'
-import auth from '../../helpers/auth'
+
 import List from '../../components/List'
 import CardList from '../../components/cardList'
 import Modal from '../../components/Modal'
 import NewLicenceForm from '../../components/forms/NewLicenceForm'
 import Navbar from '../../components/Navbar'
+import auth from '../../helpers/auth'
 import classNames from 'classnames'
 
 
@@ -30,9 +31,9 @@ export default function Dashboard() {
     } else {
        email  = state.user.email
     }
-
-    const { adding } = state.licences.adding
-
+    
+    // const { adding } = state.licences.adding
+    const adding = false
     const swrOptions = {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -52,8 +53,8 @@ export default function Dashboard() {
   }, [router])
 
     const fetcher = (...args) => api.get(...args).then(res => res.json())
-    const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
-    const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR(data ? [`/applications?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
+    // const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
+    const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR([`/applications?email=${email}`, 'withCredentials'], fetcher, swrOptions)
 
     // if(!data) return "Loading data"
     // if(error) return "An error has occurred fetching the data"
@@ -66,31 +67,32 @@ export default function Dashboard() {
 
     const submitForm = async(e) => {
       e.preventDefault()
-      const {email, application, type, duration } = e.target
+      const { appName, userEmail, description, version }  = e.target
       setLoading(true)
 
       const formData = {
-        userEmail: email.value,
-        appId: application.value,
-        duration: duration.value,
-        type: type.value,
+        appName, 
+        userEmail, 
+        description, 
+        version
       }
       
        const result = await addLicence(formData)
+       console.log("RESULT ", result)
        setLoading(false)
        setShowModal(false)
     }
 
       const addLicence = async(formData) => {
-        console.log('adding licence')
+        console.log('adding applications')
         dispatch({
-          type: "ADDING_LICENCE"
+          type: "ADDING_APPLICATION"
         })
         // send a request to the API to update the source
-       await api.post('/issue-user-licence', formData, 'protected') 
+       await api.post('/register-app', formData, 'protected') 
        // trigger a revalidation (refetch) to make sure our local data is correct
        dispatch({
-        type: "ADDED_LICENCE"
+        type: "ADDED_APPLICATION"
       })
        if(!error && !appsErr) {
           mutate()
@@ -98,24 +100,24 @@ export default function Dashboard() {
        return 'success'
       }
 
-      const deactivateLicence = async(id) => {
+      const deleteApplication = async(id) => {
         const formData = {
           licenceKey: id
         }
-         await api.post('/toggle-licence-status', formData, 'protected')
+         await api.post('/delete-app', formData, 'protected')
          mutate()
       } 
 
       const listHeadings = [
-        'user / application',
-        "licence code",
-        "Expires",
-        "Type",
-        "Status",
-        "Disable"
+        'application',
+        "Owner",
+        "Created",
+        "Version",
+        "",
+        "disable"
       ]
 
-       console.log("DATA ", user.email, data)
+    //    console.log("DATA ", user.email, data)
        console.log("Applications", applications)
   return (
     <div>
@@ -134,17 +136,17 @@ export default function Dashboard() {
             className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${btnClasses}`}
           >
          
-            Add Licence
+            Add New App
           </button>
         </div>
       </header>
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
-          { user.email && data && 
-            <List pageSize={6} doubled={['email', 'app-name']} canToggle={true} toggledId={'licence'} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
+          { user.email && applications && 
+            <List pageSize={6} canToggle={true} toggledId={'uuid'} headings={listHeadings} exclude={["key"]} listData={applications.data} validating={adding} toggleAction={deleteApplication}/>
           }
-          { !data && 
+          { !applications && 
           <>Loading data...</>
           }
           { applications?.data &&

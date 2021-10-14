@@ -3,7 +3,7 @@ import { Switch } from '@headlessui/react'
 
 function ToggleButton({isEnabled, handleChange, id}) {
 
-  const [enabled, setEnabled] = useState(null)
+  const [enabled, setEnabled] = useState(isEnabled)
 
   const toggle = (id) => {
     // if(enabled) {
