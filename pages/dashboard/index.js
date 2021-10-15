@@ -126,7 +126,7 @@ export default function Dashboard() {
 
       <header className="bg-white shadow">
       <div className="container mx-auto flex justify-between py-6 px-4">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Licence Managment</h1>
           
             <button
             onClick={() => applications && setShowModal(true)}
@@ -142,7 +142,17 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
           { user.email && data && 
-            <List pageSize={6} doubled={['email', 'app-name']} canToggle={true} toggledId={'licence'} headings={listHeadings} exclude={["created", "uses"]} listData={data} validating={adding} toggleAction={deactivateLicence}/>
+            <List 
+              pageSize={6} 
+              doubled={['email', 'app-name']} 
+              canToggle={true} 
+              toggledId={'licence'} 
+              toggleActive={{status: 'inactive'}} 
+              headings={listHeadings} 
+              exclude={["created", "uses"]} 
+              listData={data} 
+              validating={adding} 
+              toggleAction={deactivateLicence}/>
           }
           { !data && 
           <>Loading data...</>

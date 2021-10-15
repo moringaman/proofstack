@@ -9,7 +9,7 @@ import classNames from 'classnames'
 
 export default function List(props) {
 
-  const { listData, validating, canToggle, toggleAction, headings, exclude, toggledId, pageSize, doubled=[] } = props
+  const { listData, validating, canToggle, toggleAction, toggleActive, headings, exclude, toggledId, pageSize, doubled=[]} = props
 
   // const usePrevious = data => {
   //   const dataRef = useRef()
@@ -53,14 +53,11 @@ export default function List(props) {
   }
 
   const renderListItems = (el, doubled=[]) => {
-      console.log("&&& ", el)
-    let rendered = Object.keys(el).map((obj, i) => {
-
-      return (
+    let rendered = Object.keys(el).map((obj, i) => (
         <>
           {
             obj !== doubled[1] && !exclude.includes(obj) &&
-            <td className="px-1 py-4 whitespace-nowrap" key={i}>
+            <td className="px-1 py-4 whitespace-nowrap" key={i} >
               <div className="flex items-center">
                 <div className="flex-shrink-0 h-10 w-10">
                 </div>
@@ -78,7 +75,7 @@ export default function List(props) {
           }
         </>
       )
-    })
+    )
 
     return <>{rendered}</>
   }
@@ -118,7 +115,10 @@ export default function List(props) {
   const renderToggleButton = (el) => {
     return (
       <>
-       <ToggleButton isEnabled={el.status === types.INACTIVE} handleChange={toggleAction} id={el[toggledId]} />
+       <ToggleButton 
+        isEnabled={el[Object.keys(toggleActive)[0]] === toggleActive[Object.keys(toggleActive)[0]]} 
+        handleChange={toggleAction} 
+        id={el[toggledId]}/>
       </>
     )
   }
@@ -150,9 +150,9 @@ export default function List(props) {
                 }
               </tbody>
               <tbody>
-                {listData.length > 0 && sorted.map(el => (
+                {listData.length > 0 && sorted.map((el, i) => (
                   <>
-                    <tr>
+                    <tr key={i}>
                       {
                         renderListItems(el, doubled)
                       }
@@ -162,11 +162,10 @@ export default function List(props) {
                         </a>
                       </td>
                       {canToggle &&
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" key={i}>
                           {
                           renderToggleButton(el)
                           }
-                          {/* <ToggleButton isEnabled={el.status === types.INACTIVE} handleChange={toggleAction} id={el.licence} /> */}
                         </td>
                       }
                     </tr>

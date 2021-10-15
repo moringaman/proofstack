@@ -95,17 +95,17 @@ export default function Dashboard() {
         type: "ADDED_APPLICATION"
       })
        if(!error && !appsErr) {
-          mutate()
+          mutateApps()
        }
        return 'success'
       }
 
       const deleteApplication = async(id) => {
         const formData = {
-          licenceKey: id
+          uuid: id
         }
-         await api.post('/delete-app', formData, 'protected')
-         mutate()
+         await api.post('/toggle-app-status', formData, 'protected')
+         mutateApps()
       } 
 
       const listHeadings = [
@@ -128,7 +128,7 @@ export default function Dashboard() {
 
       <header className="bg-white shadow">
       <div className="container mx-auto flex justify-between py-6 px-4">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Application Managment</h1>
           
             <button
             onClick={() => applications && setShowModal(true)}
@@ -144,7 +144,17 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
           { user.email && applications && 
-            <List pageSize={6} canToggle={true} toggledId={'uuid'} headings={listHeadings} exclude={["key"]} listData={applications.data} validating={adding} toggleAction={deleteApplication}/>
+            <List 
+                pageSize={6} 
+                canToggle={true} 
+                toggleActive={{status: "FALSE"}} 
+                toggledId={'key'} 
+                headings={listHeadings} 
+                exclude={["key"]} 
+                listData={applications.data} 
+                validating={adding} 
+                toggleAction={deleteApplication}
+            />
           }
           { !applications && 
           <>Loading data...</>

@@ -45,7 +45,7 @@ export default function Pagination(props) {
                  onClick={() => pageSelect(i+1)}
                  key={i}
                  href="#"
-                 aria-current="page"
+                 aria-current={page}
                  className={`z-10 ${i+1 == currentPage && "bg-indigo-50"} border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium`}
                >
                  {i+1}
