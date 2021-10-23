@@ -4,18 +4,20 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import api from '../../helpers/get'
 import { Context } from '../../context'
-
+import auth from '../../helpers/auth'
 import List from '../../components/List'
 import CardList from '../../components/cardList'
 import Modal from '../../components/Modal'
 import NewLicenceForm from '../../components/forms/NewLicenceForm'
 import Navbar from '../../components/Navbar'
-import auth from '../../helpers/auth'
 import classNames from 'classnames'
 
 
-const Applications = () => {
+
+
+const Licences = ()  => {
   
+
     const router = useRouter()
     // const { email } = router.query
     const [user, setUser ] = useState({
@@ -31,9 +33,9 @@ const Applications = () => {
     } else {
        email  = state.user.email
     }
-    
-    // const { adding } = state.licences.adding
-    const adding = false
+
+    const { adding } = state.licences.adding
+
     const swrOptions = {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -53,9 +55,12 @@ const Applications = () => {
   }, [router])
 
     const fetcher = (...args) => api.get(...args).then(res => res.json())
-    // const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
-    const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR([`/applications?email=${email}`, 'withCredentials'], fetcher, swrOptions)
+    const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
+    const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR(data ? [`/applications?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
 
+    let activeApplications = []
+    
+    applications ? activeApplications = applications.data.filter(app => app.status === 'TRUE') : []
     // if(!data) return "Loading data"
     // if(error) return "An error has occurred fetching the data"
 
@@ -67,59 +72,56 @@ const Applications = () => {
 
     const submitForm = async(e) => {
       e.preventDefault()
-      const { appName, userEmail, description, version }  = e.target
+      const {email, application, type, duration } = e.target
       setLoading(true)
 
       const formData = {
-        appName, 
-        userEmail, 
-        description, 
-        version
+        userEmail: email.value,
+        appId: application.value,
+        duration: duration.value,
+        type: type.value,
       }
       
        const result = await addLicence(formData)
-       console.log("RESULT ", result)
        setLoading(false)
        setShowModal(false)
     }
 
       const addLicence = async(formData) => {
-        console.log('adding applications')
+        console.log('adding licence')
         dispatch({
-          type: "ADDING_APPLICATION"
+          type: "ADDING_LICENCE"
         })
         // send a request to the API to update the source
-       await api.post('/register-app', formData, 'protected') 
+       await api.post('/issue-user-licence', formData, 'protected') 
        // trigger a revalidation (refetch) to make sure our local data is correct
        dispatch({
-        type: "ADDED_APPLICATION"
+        type: "ADDED_LICENCE"
       })
        if(!error && !appsErr) {
-          mutateApps()
+          mutate()
        }
        return 'success'
       }
 
-      const deleteApplication = async(id) => {
+      const deactivateLicence = async(id) => {
         const formData = {
-          uuid: id
+          licenceKey: id
         }
-         await api.post('/toggle-app-status', formData, 'protected')
-         mutateApps()
+         await api.post('/toggle-licence-status', formData, 'protected')
+         mutate()
       } 
 
       const listHeadings = [
-        'application',
-        "Owner",
-        "Created",
-        "Active",
-        "Description",
-        "Version",
-        "",
-        "disable"
+        'user / application',
+        "licence code",
+        "Expires",
+        "Type",
+        "Status",
+        "Disable"
       ]
 
-    //    console.log("DATA ", user.email, data)
+       console.log("DATA ", user.email, data)
        console.log("Applications", applications)
   return (
     <div>
@@ -130,7 +132,7 @@ const Applications = () => {
 
       <header className="bg-white shadow">
       <div className="container mx-auto flex justify-between py-6 px-4">
-          <h1 className="text-3xl font-bold text-gray-900">Application Managment</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Licence Managment</h1>
           
             <button
             onClick={() => applications && setShowModal(true)}
@@ -138,27 +140,27 @@ const Applications = () => {
             className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${btnClasses}`}
           >
          
-            Add New App
+            Add Licence
           </button>
         </div>
       </header>
       <main>
-        <div className="max-w-9xl mx-auto py-6 sm:px-6 lg:px-8">
-            <CardList />
-          { user.email && applications && 
+        <div className="max-w-12xl mx-auto py-6 sm:px-6 lg:px-8">
+            {/* <CardList /> */}
+          { user.email && data && 
             <List 
-                pageSize={6} 
-                canToggle={true} 
-                toggleActive={{status: "FALSE"}} 
-                toggledId={'key'} 
-                headings={listHeadings} 
-                exclude={["key"]} 
-                listData={applications.data} 
-                validating={adding} 
-                toggleAction={deleteApplication}
-            />
+              pageSize={6} 
+              doubled={['email', 'app-name']} 
+              canToggle={true} 
+              toggledId={'licence'} 
+              toggleActive={{status: 'inactive'}} 
+              headings={listHeadings} 
+              exclude={["created", "uses"]} 
+              listData={data} 
+              validating={adding} 
+              toggleAction={deactivateLicence}/>
           }
-          { !applications && 
+          { !data && 
           <>Loading data...</>
           }
           { applications?.data &&
@@ -172,7 +174,7 @@ const Applications = () => {
               <NewLicenceForm 
                   isLoading={loading} 
                   submitForm={submitForm} 
-                  data={{'select1':applications.data}}
+                  data={{'select1':activeApplications}}
                   setOpen={(e) => setShowModal(e)}
               />
                 }
@@ -184,6 +186,7 @@ const Applications = () => {
   )
 }
 
-Applications.layout = "L2"
+Licences.layout = "L2"
 
-export default Applications
+
+export default Licences

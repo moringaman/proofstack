@@ -152,11 +152,11 @@ export default function List(props) {
               <tbody>
                 {listData.length > 0 && sorted.map((el, i) => (
                   <>
-                    <tr key={i}>
+                    <tr className="divide-y-2" key={i}>
                       {
                         renderListItems(el, doubled)
                       }
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="divide-y-2 px-6 py-4 whitespace-nowrap text-right text-sm font-medium ">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900">
                           Edit
                         </a>
