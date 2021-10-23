@@ -35,7 +35,7 @@ export default function Example() {
         console.log("STATE ", state)
       delete user['password']
         Router.push({
-          pathname: `dashboard/`,
+          pathname: `licences/`,
           // query: {email: user.email}
         })
       }
