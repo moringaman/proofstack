@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react'
 import { Context } from '../../context'
 import Router from 'next/router'
 import api from '../../helpers/get'
+import useAuth from '../../hooks/useAuth'
 
 export default function Example() {
 
@@ -14,33 +15,11 @@ export default function Example() {
     setUser({ ...user, [name]: value })
   }
 
+  const { logIn, logOut, isLoggedIn } = useAuth(setLoading, dispatch, user)
+
   const handleLogin = async (e) => {
     e.preventDefault()
-    if (user.email && user.password) {
-      setLoading(true)
-      const response = await api.post('/login', user, 'protected')
-      console.log(response.status)
-      const result = await response.text()
-      const parsed = JSON.parse(result)
-      console.log(parsed.accessToken)
-      // TODO: Remove password from user object
-      if (response.status === 200) {
-        setLoading(false);
-        localStorage.setItem('access_token', parsed['accessToken'])
-        localStorage.setItem('user', user.email)
-        dispatch({
-          type: "LOGGED_IN_USER",
-          payload: user
-        })
-        console.log("STATE ", state)
-      delete user['password']
-        Router.push({
-          pathname: `licences/`,
-          // query: {email: user.email}
-        })
-      }
-
-    }
+      await logIn()
   }
 
   useEffect(() => {

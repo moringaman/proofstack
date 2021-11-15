@@ -14,6 +14,16 @@ module.exports = {
                 `Bearer ${token}`
                 );
          }
+
+         if(security === 'refresh') {
+          const token = localStorage.getItem('refresh_token')
+          console.log("TOKEN ",token)
+     
+         myHeaders.append(
+             "Authorization",
+             `Bearer ${token}`
+             );
+      }
       
       var raw = JSON.stringify(data);
       
@@ -29,17 +39,20 @@ module.exports = {
   
     },
     
-    get: (url, credentials ) => {
-
+    get: (url, credentials='' ) => {
+      var myHeaders = new Headers();
 
         var requestOptions = {
             method: 'GET',
+            headers: myHeaders,
             redirect: 'follow'
           };
 
-          if(credentials) {
+          if(credentials === 'withCredentials') {
               console.log("adding credentials")
-             const token = JSON.parse(localStorage.getItem("Token:"))
+             const token = localStorage.getItem('access_token')
+              myHeaders.append("Authorization", `Bearer ${token}`);
+              console.log("TOKEN ",token)
 
           }
 

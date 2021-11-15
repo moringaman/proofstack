@@ -57,6 +57,7 @@ export default function List(props) {
         <>
           {
             obj !== doubled[1] && !exclude.includes(obj) &&
+          
             <td className="px-1 py-4 whitespace-nowrap" key={i} >
               <div className="flex items-center">
                 <div className="flex-shrink-0 h-10 w-10">
@@ -67,11 +68,12 @@ export default function List(props) {
                   </div>
                   {
                     obj === doubled[0] &&
-                    <div className="text-sm font-medium text-gray-600">{formatted(el[doubled[1]])}</div>
+                    <div key={i} className="text-sm font-medium text-gray-600">{formatted(el[doubled[1]])}</div>
                   }
                 </div>
               </div>
             </td>
+
           }
         </>
       )
@@ -112,13 +114,15 @@ export default function List(props) {
     return element
   }
 
-  const renderToggleButton = (el) => {
+  const renderToggleButton = (el, i) => {
     return (
       <>
        <ToggleButton 
         isEnabled={el[Object.keys(toggleActive)[0]] === toggleActive[Object.keys(toggleActive)[0]]} 
         handleChange={toggleAction} 
-        id={el[toggledId]}/>
+        id={el[toggledId]}
+        key={i}
+        />
       </>
     )
   }
@@ -164,7 +168,7 @@ export default function List(props) {
                       {canToggle &&
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" key={i}>
                           {
-                          renderToggleButton(el)
+                          renderToggleButton(el, i)
                           }
                         </td>
                       }

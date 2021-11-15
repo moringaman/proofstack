@@ -4,13 +4,8 @@ import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import api from '../../helpers/get'
 import { Context } from '../../context'
-
-import List from '../../components/List'
-import CardList from '../../components/cardList'
-import Modal from '../../components/Modal'
-import NewLicenceForm from '../../components/forms/NewLicenceForm'
-import Navbar from '../../components/Navbar'
-import auth from '../../helpers/auth'
+import { List, Modal, CardList, NewApplicationForm } from '../../components'
+import { auth, fetcher } from '../../helpers'
 import classNames from 'classnames'
 
 
@@ -52,38 +47,44 @@ const Applications = () => {
       // fetchLicences()
   }, [router])
 
-    const fetcher = (...args) => api.get(...args).then(res => res.json())
-    // const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
+    
     const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR([`/applications?email=${email}`, 'withCredentials'], fetcher, swrOptions)
 
+    // console.log("ERROR ", appsErr)
     // if(!data) return "Loading data"
-    // if(error) return "An error has occurred fetching the data"
+    if(appsErr?.status === 405 )  {
+      console.log("OOOOPS  ", appsErr.status)
+      router.push('/auth')
+    }
+      // return "An error has occurred fetching the data"
 
     const btnClasses = classNames({
-      'bg-gray-200': validateApps || !applications,
+      'bg-gray-200': validateApps,
       'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500': !validateApps && applications
 
     })
 
     const submitForm = async(e) => {
       e.preventDefault()
-      const { appName, userEmail, description, version }  = e.target
+      const { appName, description, version }  = e.target
       setLoading(true)
 
       const formData = {
-        appName, 
-        userEmail, 
-        description, 
-        version
+        appName: appName.value, 
+        userEmail: email, 
+        description: description.value, 
+        version: version.value
       }
+
+      console.log("FORMDATA ", formData)
       
-       const result = await addLicence(formData)
+       const result = await addApplication(formData)
        console.log("RESULT ", result)
        setLoading(false)
        setShowModal(false)
     }
 
-      const addLicence = async(formData) => {
+      const addApplication = async(formData) => {
         console.log('adding applications')
         dispatch({
           type: "ADDING_APPLICATION"
@@ -94,7 +95,7 @@ const Applications = () => {
        dispatch({
         type: "ADDED_APPLICATION"
       })
-       if(!error && !appsErr) {
+       if(!appsErr) {
           mutateApps()
        }
        return 'success'
@@ -133,7 +134,7 @@ const Applications = () => {
           <h1 className="text-3xl font-bold text-gray-900">Application Managment</h1>
           
             <button
-            onClick={() => applications && setShowModal(true)}
+            onClick={() =>  setShowModal(true)}
             type="button"
             className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${btnClasses}`}
           >
@@ -145,7 +146,7 @@ const Applications = () => {
       <main>
         <div className="max-w-9xl mx-auto py-6 sm:px-6 lg:px-8">
             <CardList />
-          { user.email && applications && 
+          {  user.email && applications?.data && 
             <List 
                 pageSize={6} 
                 canToggle={true} 
@@ -161,18 +162,18 @@ const Applications = () => {
           { !applications && 
           <>Loading data...</>
           }
-          { applications?.data &&
+          { 
             <Modal 
               submitForm={submitForm}
               showModal={showModal}
-              title="Issue New App Licence"
+              title="Create New Application"
               setOpen={(e) => setShowModal(e)}
               >
-                {applications?.data && 
-              <NewLicenceForm 
+                {
+              <NewApplicationForm 
                   isLoading={loading} 
                   submitForm={submitForm} 
-                  data={{'select1':applications.data}}
+                //   data={{'email': user.email}}
                   setOpen={(e) => setShowModal(e)}
               />
                 }
