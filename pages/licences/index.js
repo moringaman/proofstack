@@ -2,14 +2,9 @@
 import { useEffect, useState, useRef, useContext} from 'react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import api from '../../helpers/get'
 import { Context } from '../../context'
-import auth from '../../helpers/auth'
-import List from '../../components/List'
-import CardList from '../../components/cardList'
-import Modal from '../../components/Modal'
-import NewLicenceForm from '../../components/forms/NewLicenceForm'
-import Navbar from '../../components/Navbar'
+import { auth, fetcher, api} from '../../helpers'
+import { List, Modal, NewLicenceForm, CardList } from '../../components'
 import classNames from 'classnames'
 
 
@@ -54,9 +49,14 @@ const Licences = ()  => {
       // fetchLicences()
   }, [router])
 
-    const fetcher = (...args) => api.get(...args).then(res => res.json())
+    // const fetcher = (...args) => api.get(...args).then(res => res.json())
     const { data, mutate, isValidating, error } = useSWR(email ? [`/app-licences?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
     const { data:applications, mutate:mutateApps, isValidating:validateApps, error:appsErr } = useSWR(data ? [`/applications?email=${email}`, 'withCredentials']: null, fetcher, swrOptions)
+
+    if(appsErr?.status === 405 )  {
+      console.log("OOOOPS  ", appsErr.status)
+      router.push('/auth')
+    }
 
     let activeApplications = []
     

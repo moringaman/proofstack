@@ -53,9 +53,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -73,8 +73,8 @@ const renderLayout = (children) => {
             <span className="flex font-medium text-sm text-gray-300 px-4 my-4 uppercase">Manage</span>
           </li>
           {
-              manageLinks.map(item => (
-                <li className="my-px">
+              manageLinks.map((item, i) => (
+                <li className="my-px" key={i}>
                     <Link href={item.link}>
                     <a
                   href="#"
@@ -87,9 +87,9 @@ const renderLayout = (children) => {
                   <span className="flex items-center justify-center text-lg text-gray-400">
                     <svg
                       fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                       className="h-6 w-6"
@@ -114,9 +114,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -140,9 +140,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-green-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -164,9 +164,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -185,9 +185,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -211,9 +211,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-gray-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -235,9 +235,9 @@ const renderLayout = (children) => {
               <span className="flex items-center justify-center text-lg text-red-400">
                 <svg
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   className="h-6 w-6"
@@ -264,9 +264,9 @@ const renderLayout = (children) => {
                 <svg
                   className="h-6 w-6"
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
@@ -287,9 +287,9 @@ const renderLayout = (children) => {
                 <svg
                   className="h-6 w-6 text-gray-500"
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
@@ -299,10 +299,10 @@ const renderLayout = (children) => {
             </div>
           </form>
           <div className="flex ml-auto">
-            <a href className="flex flex-row items-center">
+            <a href="#" className="flex flex-row items-center">
               <img
                 src="https://pbs.twimg.com/profile_images/378800000298815220/b567757616f720812125bfbac395ff54_normal.png"
-                alt
+                alt="image"
                 className="h-10 w-10 bg-gray-200 border rounded-full"
               />
               <span className="flex flex-col ml-2">
