@@ -40,9 +40,9 @@ export default function NewLicenceForm({ data, submitForm, isLoading, setOpen })
                         >
                             {data.select1.map(app => (
                                 <option 
-                                key={app.name}
-                                value={app.key}
-                                >{app.name}</option>
+                                key={app.appId}
+                                value={app.appId}
+                                >{app.appName}</option>
                             )
                             )}
                         </select>

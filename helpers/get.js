@@ -59,7 +59,7 @@ module.exports = {
           // const retryFetch = (url, requestOptions, retries = 4, backoff = 1000) => {
           //   const retryCodes = [404, 401, 408, 500, 502, 503, 504, 522, 524, 203]
 
-          //   return fetch(url,  requestOptions)
+          // return fetch(url,  requestOptions)
           //   .then(response => {
           //     console.log('STATUS', response.status)
           //     if(response.status === 200) return response.json()

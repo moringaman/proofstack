@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Switch } from '@headlessui/react'
 
-function ToggleButton({isEnabled, handleChange, id}) {
+function ToggleButton({isEnabled, handleChange, id, grayedOut}) {
 
   const [enabled, setEnabled] = useState(isEnabled)
 
   const toggle = (id) => {
-    // if(enabled) {
+    if(!grayedOut) {
       setEnabled((enabled) => !enabled)
       handleChange(id)
-    // }
+    }
   }
 
   useEffect(() => {
