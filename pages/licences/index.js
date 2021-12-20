@@ -60,7 +60,7 @@ const Licences = ()  => {
 
     let activeApplications = []
     
-    applications ? activeApplications = applications.data.filter(app => app.status === 'TRUE') : []
+    applications ? activeApplications = applications.data.filter(app => app.active === 'TRUE') : []
     // if(!data) return "Loading data"
     // if(error) return "An error has occurred fetching the data"
 
@@ -108,7 +108,7 @@ const Licences = ()  => {
         const formData = {
           licenceKey: id
         }
-         await api.post('/toggle-licence-status', formData, 'protected')
+         await api.post('/toggle-licence-status', formData)
          mutate()
       } 
 
@@ -149,13 +149,13 @@ const Licences = ()  => {
             {/* <CardList /> */}
           { user.email && data && 
             <List 
-              pageSize={6} 
-              doubled={['email', 'app-name']} 
+              pageSize={6}
+              doubled={['email', 'application_name']} 
               canToggle={true} 
               toggledId={'licence'} 
-              toggleActive={{status: 'inactive'}} 
+              toggleActive={{inactive: 'inactive'}} 
               headings={listHeadings} 
-              exclude={["created", "uses"]} 
+              exclude={["date_from", "uses", "licence id"]} 
               listData={data} 
               validating={adding} 
               toggleAction={deactivateLicence}/>

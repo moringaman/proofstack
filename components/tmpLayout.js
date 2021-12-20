@@ -1,11 +1,16 @@
 import { useRouter } from 'next/router'
+import { useContext } from 'react'
+import { Context } from '../context'
 import Link from 'next/link'
+import useAuth from '../hooks/useAuth'
 
 
 const tmpLayout = ({children}) => {
 
     const router = useRouter()
-
+    const { state, dispatch } = useContext(Context)
+  const { logIn, logOut, isLoggedIn } = useAuth(null, dispatch, null)
+    
     const manageLinks =[
         { name: 'Applications', link: '/applications'},
         { name: 'Licences', link: '/licences'}
@@ -229,6 +234,7 @@ const renderLayout = (children) => {
           </li>
           <li className="my-px">
             <a
+              onClick={() => logOut()}
               href="#"
               className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >

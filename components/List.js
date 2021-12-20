@@ -2,23 +2,17 @@
 import ToggleButton from './ToggleButton'
 import _ from 'lodash'
 import moment from 'moment'
+import elipsify from '../helpers/ui/elipsify'
 import { useRef, useEffect, useState } from 'react'
 import Pagination from './Pagination'
 import classNames from 'classnames'
+import { ChevronDoubleLeftIcon } from '@heroicons/react/outline'
 
 
 export default function List(props) {
 
   const { listData, validating, canToggle, toggleAction, toggleActive, headings, exclude, toggledId, pageSize, doubled=[]} = props
 
-  // const usePrevious = data => {
-  //   const dataRef = useRef()
-
-  //   useEffect(() => {
-  //     dataRef.current = listData
-  //   }, [listData])
-  //   return dataRef.current
-  // }
 
   const types = { 
     INACTIVE: 'inactive'
@@ -26,7 +20,7 @@ export default function List(props) {
 
   // const previouslistData = usePrevious(listData)
 
-  let sorted = _.orderBy(listData, ['created'], ['desc'])
+  let sorted = _.orderBy(listData, ['date_from'], ['desc'])
 
   console.log("SORTED ", sorted)
   const perPage = pageSize
@@ -111,18 +105,28 @@ export default function List(props) {
     
     if (moment(element, moment.ISO_8601, true).isValid() === true) return moment(element).format("MMM Do YY")
     // if (['expired', 'active', 'disabled', 'inactive'].includes(element)) return renderStatus(element)
-    return element
+    return elipsify(element, 15)
   }
 
   const renderToggleButton = (el, i) => {
+    console.log("ELEMENT ", el)
+    console.log('active? prop ', toggleActive[Object.keys(toggleActive)[0]], 'element val ', el[toggleActive[Object.keys(toggleActive)[0]]])
+    console.log("enabled ", toggleActive[Object.keys(toggleActive)[0]] !== el[toggleActive[Object.keys(toggleActive)[0]]])
+
     return (
       <>
-       <ToggleButton 
-        isEnabled={el[Object.keys(toggleActive)[0]] === toggleActive[Object.keys(toggleActive)[0]]} 
-        handleChange={toggleAction} 
-        id={el[toggledId]}
-        key={i}
-        />
+      {
+      el.inactive !== 'expired'  ?
+      <ToggleButton 
+      isEnabled={el[toggleActive[Object.keys(toggleActive)[0]]] === toggleActive[Object.keys(toggleActive)[0]]} 
+      handleChange={toggleAction} 
+      id={el[toggledId]}
+      key={i}
+      />
+      :
+      <ToggleButton grayedOut={true} isEnabled={true}/>
+      }
+     
       </>
     )
   }
